@@ -196,18 +196,31 @@ make an index.html
 
 vi index.html
 
-put some custom html file for exmaple.
+put some custom html file for exmaple, you can get it in chatpt
 
-***
-<!DOCTYPE html>
-<html>
-<head>
-<title>My First Docker App</title>
-<style>body { font-family: sans-serif; text-align: center; margin-top: 50px; }</style>
-</head>
-<body>
-<h1>Docker is Running on Rocky Linux!</h1>
-<p>This page is being served from a custom Docker image.</p>
-</body>
-</html>
-***
+Create a Dockerfile, with name Dockerfile and put below content
+
+FORM nginx:alpine
+
+COPY index.html /usr/share/nginx/html/index.html
+
+Build custom image
+
+docker build -t my-custom-web:v1 .
+
+Stop old nginx container first, then delete the existing nginx image
+
+docker ps
+
+docker stop container_id
+
+docker rm -f container_id
+
+docker images , with this command you will get the images
+
+docker rmi image_name
+
+Then run the container, 
+
+docker run -d -p 8080:80 --name my-custom-container my-custom-web:v1
+
