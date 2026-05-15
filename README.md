@@ -150,3 +150,39 @@ FROM nginx:alpine
 
 COPY index.html /usr/share/nginx/html/index.html
 
+Dockerfile --> Docker build image --> Stores image locally --> Can run container from it.
+
+# Real world example :-
+
+Image -- Cake recipe
+
+Container -- Actual cake
+
+Registry -- Recipe website
+
+Docker Daemon -- chef
+
+Docker run -- Bake cake
+
+Docker pull -- Download recipe
+
+# Installation in Docker
+
+sudo dnf remove docker docker-client
+
+sudo dnf install -y yum-utils
+
+sudo dnf config-manager --add -repo https://download.docker.com/linux/centos/docker-ce.repo
+
+sudo dnf install -y docker-ce docker-ce-cli containerd.io
+
+sudo systemctl enable --now docker
+
+sudo usermod -aG docker $USER
+
+sudo firewall-cmd --permanent --add-port=8080/tcp && sudo firewall-cmd --reload
+
+sudo run -d -p 8080:80 --name my-web-server nginx
+
+docker ps
+
