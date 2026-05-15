@@ -186,3 +186,28 @@ sudo run -d -p 8080:80 --name my-web-server nginx
 
 docker ps
 
+# Deploy custom application
+
+make a directory and go to inside the directory
+
+mkdir my-first-app && cd my-first-app
+
+make an index.html
+
+vi index.html
+
+put some custom html file for exmaple.
+
+***
+<!DOCTYPE html>
+<html>
+<head>
+<title>My First Docker App</title>
+<style>body { font-family: sans-serif; text-align: center; margin-top: 50px; }</style>
+</head>
+<body>
+<h1>Docker is Running on Rocky Linux!</h1>
+<p>This page is being served from a custom Docker image.</p>
+</body>
+</html>
+***
