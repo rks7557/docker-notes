@@ -491,7 +491,7 @@ Container Removed
       ↓
 Volume Still Exists
 
-30. Best Practices
+Best Practices
 
 ✅ Use named volumes
 ✅ Use volumes for databases
