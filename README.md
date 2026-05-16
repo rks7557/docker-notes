@@ -224,3 +224,278 @@ Then run the container,
 
 docker run -d -p 8080:80 --name my-custom-container my-custom-web:v1
 
+
+Docker Push & Pull from Docker Hub
+
+I created a portfolio application using HTML, CSS, and JavaScript.
+
+First, install Docker Desktop or log in to your Docker account from the browser and create a repository named portfolio.
+
+Create two folders:
+
+/tmp/portfolio
+/my-portfolio
+
+Step 1 — Copy Portfolio Code
+
+Copy your portfolio application code from your local system to:
+
+/tmp/portfolio
+
+Step 2 — Move Code to Project Directory
+
+Move all files from /tmp/portfolio to /my-portfolio.
+
+Example:
+
+mv /tmp/portfolio/* /my-portfolio/
+
+Step 3 — Create Dockerfile
+
+Create a file named Dockerfile inside /my-portfolio.
+
+FROM nginx:alpine
+
+COPY . /usr/share/nginx/html
+
+Step 4 — Build Docker Image
+
+Run the following command inside /my-portfolio:
+
+docker build -t rks7557/portfolio:v1 .
+
+Step 5 — Login to Docker Hub
+
+docker login -u rks7557
+
+Enter your Docker Hub password when prompted.
+
+Step 6 — Push Docker Image to Docker Hub
+
+docker push rks7557/portfolio:v1
+
+Step 7 — Pull the Docker Image
+
+docker pull rks7557/portfolio:v1
+
+Step 8 — Run the Container
+
+docker run -d -p 8080:80 --name my-portfolio rks7557/portfolio:v1
+
+
+# Docker Volume
+
+A docker volume is a persistant storage mechanism used to store data outside container filesystem.
+Normally containers are temporary.
+
+We use docker volume normally in 2 cases:-
+
+1. If container is deleted
+
+2. All internal data is lost.
+
+Problem Without Volumes :-
+
+Example
+
+docker run -dit --name test alpine
+
+Create file
+
+echo "hello" > demo.txt
+
+Now remove container:
+
+docker rm -f test
+
+Now from above example, everything got lost, as container filesystems are temporary.
+
+Solution — Docker Volume
+
+Volume keeps data separately.
+
+Even if container deletes:
+data survives.
+
+Docker Volume Architecture :-
+
+Container --->  Mounter Volume --->  Host Storage
+
+Create a Docker Volume
+
+docker volume create portfolio-data
+
+Verify Volume
+
+docker volume ls
+
+Inspect Volume
+
+docker volume inspect portfolio-data
+
+Actual Data Location
+
+Docker stores volume data here:
+
+/var/lib/docker/volumes/
+
+In my case 
+
+/var/lib/docker/volumes/portfolio-data/_data
+
+Use Volume with Container
+
+-v volume-name:container-path
+
+docker run -d  --name mynginx -v portfolio-data:/usr/share/nginx/html nginx
+
+Anonymous Volumes
+
+Docker can create unnamed volumes automatically.
+
+Example:
+
+docker run -v /data nginx
+
+Docker creates random volume.
+
+Not recommended for production.
+
+Named Volumes 
+
+Example:
+
+docker volume create mysql-data
+
+Bind Mount vs Volume
+
+Bind Mount
+-v /host/path:/container/path
+
+Example:
+
+-v /home/rishav/project:/app
+
+Direct host folder mapping.
+
+Docker Volume
+-v volume-name:/container/path
+
+tmpfs Mount
+
+Stored in RAM only.
+
+Example:
+
+docker run --tmpfs /data nginx
+
+Fast but temporary.
+
+Used for:
+
+secrets
+
+cache
+
+temporary files
+
+Volume Drivers
+
+Docker supports drivers.
+
+Default:
+
+local
+
+Advanced:
+
+NFS
+
+cloud storage
+
+plugins
+
+Shared Volumes
+
+Multiple containers can use same volume.
+
+Example:
+
+Container A
+       ↓
+Shared Volume
+       ↑
+Container B
+
+Example
+
+docker run -dit --name c1 -v shared-data:/data alpine
+
+docker run -dit --name c2 -v shared-data:/data alpine
+
+Both access same data.
+
+Real World Database Example
+
+Most important use case.
+
+MySQL Persistent Storage
+
+docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=admin -v mysql-data:/var/lib/mysql mysql
+
+Database stored safely.
+
+Why Important?
+
+Without volume:
+❌ DB lost after container deletion
+
+With volume:
+✅ DB survives
+
+Jenkins Example
+
+docker run -d -p 8080:8080 -v jenkins-data:/var/jenkins_home jenkins/jenkins
+
+Jenkins jobs remain persistent.
+
+Backup Docker Volume
+
+Simple Backup
+
+tar -czvf backup.tar.gz /var/lib/docker/volumes/website-data
+
+Restore
+
+Extract back into volumes directory.
+
+Remove Volume
+
+docker volume rm website-data
+
+Remove Unused Volumes
+
+docker volume prune
+
+Removes dangling volumes.
+
+Volume Lifecycle
+
+Create Volume
+      ↓
+Attach to Container
+      ↓
+Store Data
+      ↓
+Container Removed
+      ↓
+Volume Still Exists
+
+30. Best Practices
+
+✅ Use named volumes
+✅ Use volumes for databases
+✅ Backup important volumes
+✅ Avoid anonymous volumes in production
+✅ Separate application and data
+
