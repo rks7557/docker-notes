@@ -1,5 +1,5 @@
 # docker-notes
-Docker daily notes...
+Docker daily notes, made my "Rishav Kumar Sharma"
 
 Docker is a platform for building, packaging, and running applications inside containers.
 
