@@ -559,7 +559,7 @@ none	No networking
 overlay	Multi-host container communication
 macvlan	Container gets real LAN IP
 
-1. Bridge Network
+# Bridge Network
 
 This is the default Docker network.
 
@@ -605,3 +605,301 @@ Container1 → docker0 bridge → Container2
 
 note :- if we run command ip addr we will see output like docker0, which behaves like a virtual switch.
 
+Problem in Default Bridge
+
+Containers cannot resolve names automatically.
+
+Example:
+
+c1 cannot ping c2 by container name
+
+Solution:
+Use custom bridge network.
+
+# Custom Bridge Network
+
+Create:
+
+docker network create mynet
+
+Run containers:
+
+docker run -dit --name app1 --network mynet nginx
+docker run -dit --name app2 --network mynet ubuntu
+
+Now:
+
+ping app1
+
+Works because Docker provides internal DNS.
+
+Real-World Example
+
+Like company internal employee directory:
+
+You call “Rahul”
+instead of extension number.
+
+Docker DNS does same.
+
+# Port Mapping
+
+Containers are isolated.
+
+Outside world cannot access container directly.
+
+We expose ports using:
+
+-p hostPort:containerPort
+
+Example:
+
+docker run -d -p 8080:80 nginx
+
+Meaning:
+
+Host	Container
+8080	80
+
+Now browser accesses:
+
+http://localhost:8080
+Real-World Example
+
+Think:
+
+Company receptionist receives calls on main number
+Forwards to employee extension
+
+Port mapping works same way.
+
+Traffic Flow
+User → Host Port 8080 → Container Port 80
+
+# Host Network
+
+Container shares host network directly.
+
+Run:
+
+docker run --network host nginx
+
+Now container uses:
+
+Host IP
+Host ports directly
+
+No isolation.
+
+Real-World Example
+
+Employee directly uses company main phone number.
+
+No receptionist forwarding needed.
+
+Advantages
+Faster
+No NAT
+Better performance
+Disadvantages
+Less secure
+Port conflicts possible
+
+None Network
+
+Container gets no networking.
+
+Example:
+
+docker run --network none ubuntu
+
+Container:
+
+No internet
+No communication
+Only loopback interface
+Real-World Example
+
+Employee locked in isolated room with no phone/network.
+
+Overlay Network (Docker Swarm)
+
+Used in multi-host environments.
+
+Suppose:
+
+Server	Container
+Server1	frontend
+Server2	backend
+Server3	database
+
+Overlay network connects them.
+
+# Real-World Example
+
+Different office branches connected via VPN/MPLS.
+
+Employees communicate as if same office.
+
+Create Overlay Network
+docker network create -d overlay myoverlay
+
+Requires Docker Swarm.
+
+Architecture
+Datacenter 1 ---- Overlay ---- Datacenter 2
+
+Macvlan Network
+
+Container gets actual LAN IP.
+
+Example:
+
+Router sees container as separate machine.
+
+# Real-World Example
+
+Employee gets personal direct phone number instead of extension.
+
+Use Cases
+Legacy applications
+Monitoring tools
+Network appliances
+
+Container DNS Resolution
+
+Docker has built-in DNS server.
+
+Containers can communicate using:
+
+Container names
+Service names
+
+Example:
+
+ping mysql
+
+instead of:
+
+ping 172.18.0.5
+
+# Inspect Docker Network
+
+Command:
+
+docker network inspect bridge
+
+Shows:
+
+Subnet
+Gateway
+Connected containers
+IP allocation
+
+Connect Running Container to Network
+
+docker network connect mynet container1
+
+Disconnect:
+
+docker network disconnect mynet container1
+
+Real Production Example
+
+Suppose you deploy:
+
+Service	Container
+React App	frontend
+NodeJS API	backend
+MySQL	database
+Redis	cache
+
+Create network:
+
+docker network create prod-net
+
+Run:
+
+docker run -d --name mysql --network prod-net mysql
+docker run -d --name redis --network prod-net redis
+docker run -d --name backend --network prod-net backend-image
+docker run -d --name frontend --network prod-net frontend-image
+
+Backend accesses:
+
+mysql:3306
+redis:6379
+
+using container names.
+
+How Internet Access Works
+
+Container traffic:
+
+Container → docker0 → Host NAT → Internet
+
+Docker uses:
+
+iptables
+
+masquerading/NAT
+
+# Important Commands
+List Networks
+
+docker network ls
+
+Create Network
+
+docker network create mynet
+
+Inspect Network
+
+docker network inspect mynet
+
+Remove Network
+
+docker network rm mynet
+
+Connect Container
+
+docker network connect mynet c1
+
+# Docker Compose Networking
+
+Example:
+
+services:
+  frontend:
+    image: nginx
+
+  backend:
+    image: nodeapp
+
+  db:
+    image: mysql
+
+Docker Compose automatically creates network.
+
+Services communicate using:
+
+frontend
+backend
+db
+
+as hostnames.
+
+# Security Best Practices
+Use Custom Bridge Networks
+
+Avoid default bridge.
+
+Do Not Expose Database Ports Publicly
+
+Bad:
+
+-p 3306:3306
+Use Internal Networks
+
+Frontend exposed:
+Backend and DB internal only.
