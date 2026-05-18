@@ -499,3 +499,109 @@ Best Practices
 ✅ Avoid anonymous volumes in production
 ✅ Separate application and data
 
+
+# Docker Networking
+
+Docker networking is the system that allows:
+
+Containers to communicate with each other
+Containers to communicate with the host machine
+Containers to access the internet
+External users to access applications running inside containers
+
+# Why needed Docker networking ??
+
+Imagine you have:
+
+One container running a frontend app
+One container running a backend API
+One container running MySQL database
+
+How will they talk to each other?
+
+Docker networking solves this.
+
+Real world example :-
+	
+Container       -->	      Employee
+Docker Network   -->	Office LAN
+IP Address	     --> Employee desk extension
+Port Mapping  -->	Reception desk forwarding calls
+Bridge Network -->	Department network
+Host Network  -->	Employee directly using company main phone
+Overlay Network  -->	Multiple branch offices connected
+DNS in Docker -->	Employee directory system
+
+# How Docker Networking Works Internally
+
+Every container gets:
+
+Its own network namespace
+Virtual Ethernet interface (veth)
+IP address
+Routing table
+DNS configuration
+
+Docker creates:
+
+Virtual bridges
+NAT rules using iptables
+Internal DNS server
+
+# Types of Docker Networks
+
+Main Docker network drivers:
+
+Driver	Purpose
+bridge	Default communication
+host	Share host networking
+none	No networking
+overlay	Multi-host container communication
+macvlan	Container gets real LAN IP
+
+1. Bridge Network
+
+This is the default Docker network.
+
+When you install Docker, Docker automatically creates.
+
+docker network ls
+
+you'll see output like :-
+bridge
+host
+none
+
+Real-World Example of Bridge Network
+
+Imagine:
+
+HR department has its own internal network
+Employees inside HR can communicate easily
+Other departments cannot directly access
+
+Same happens in Docker bridge network.
+
+How Bridge Network Works
+
+When container starts:
+
+Docker assigns private IP
+Connects container to virtual bridge (docker0)
+Creates NAT rules.
+
+Example :-
+
+docker run -dit --name c1 nginx
+docker run -dit --name c2 ubuntu
+
+check ip:
+
+docker inspect c1
+
+Communication flow :-
+
+Container1 → docker0 bridge → Container2
+
+note :- if we run command ip addr we will see output like docker0, which behaves like a virtual switch.
+
