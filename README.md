@@ -5,20 +5,13 @@ Docker is a platform for building, packaging, and running applications inside co
 
 A container is a lightweight, isolated environment that includes:
 
-your application code
-runtime (like Node.js, Python, Java)
-libraries and dependencies
-configuration files
+your application code runtime (like Node.js, Python, Java) libraries and dependencies configuration files.
 
 This makes the app run the same way on:
 
-your laptop
-a testing server
-production/cloud environments
-Simple analogy
+your laptop a testing server production/cloud environments Simple analogy.
 
 Think of Docker containers like shipping containers for software.
-
 No matter where the container goes — ship, truck, or train — the contents stay consistent.
 
 Similarly, Docker ensures:
@@ -26,7 +19,7 @@ Similarly, Docker ensures:
 “It works on my machine” → also works everywhere else.
 
 # history -
- dot cloud named company saw this fir, that "it works on my machine but not working in client's machine" & then they resolve it in 2013 and in a public conference named "pyconn" in they opensource it and it a CNCF (Cloud native computing foundation) certified.
+ dot cloud named company saw this first time, that "it works on my machine but not working in client's machine" & then they resolve it in 2013 and in a public conference named "pyconn" in they opensource it and it a CNCF (Cloud native computing foundation) certified.
 
  # Why using docker ?
 
@@ -138,6 +131,7 @@ Client --> Docker Daemon --> Docker hub registry --> Download nginx image --> St
 b. docker run nginx 
 
 docker checks local image
+
 if image exist locally then create container, otherwise pull the image first from the docker hub afterthat start the container.
 
 c. docker build -t <image_name>: v1 .
@@ -524,12 +518,19 @@ Docker networking solves this.
 Real world example :-
 	
 Container       -->	      Employee
+
 Docker Network   -->	Office LAN
+
 IP Address	     --> Employee desk extension
+
 Port Mapping  -->	Reception desk forwarding calls
+
 Bridge Network -->	Department network
+
 Host Network  -->	Employee directly using company main phone
+
 Overlay Network  -->	Multiple branch offices connected
+
 DNS in Docker -->	Employee directory system
 
 # How Docker Networking Works Internally
@@ -537,27 +538,31 @@ DNS in Docker -->	Employee directory system
 Every container gets:
 
 Its own network namespace
+
 Virtual Ethernet interface (veth)
+
 IP address
+
 Routing table
+
 DNS configuration
 
-Docker creates:
+#Docker creates:
 
-Virtual bridges
-NAT rules using iptables
-Internal DNS server
+a) Virtual bridges
+b) NAT rules using iptables
+c) Internal DNS server
 
 # Types of Docker Networks
 
 Main Docker network drivers:
 
-Driver	Purpose
-bridge	Default communication
-host	Share host networking
-none	No networking
-overlay	Multi-host container communication
-macvlan	Container gets real LAN IP
+a) Driver	Purpose
+b) bridge	Default communication
+c) host	Share host networking
+d) none	No networking
+e) overlay	Multi-host container communication
+f) macvlan	Container gets real LAN IP
 
 # Bridge Network
 
@@ -572,13 +577,11 @@ bridge
 host
 none
 
-Real-World Example of Bridge Network
+#Real-World Example of Bridge Network
 
 Imagine:
 
-HR department has its own internal network
-Employees inside HR can communicate easily
-Other departments cannot directly access
+HR department has its own internal network, Employees inside HR can communicate easily and other departments cannot directly access.
 
 Same happens in Docker bridge network.
 
@@ -586,9 +589,9 @@ How Bridge Network Works
 
 When container starts:
 
-Docker assigns private IP
-Connects container to virtual bridge (docker0)
-Creates NAT rules.
+a) Docker assigns private IP
+b) Connects container to virtual bridge (docker0)
+c) Creates NAT rules.
 
 Example :-
 
@@ -614,6 +617,7 @@ Example:
 c1 cannot ping c2 by container name
 
 Solution:
+
 Use custom bridge network.
 
 # Custom Bridge Network
@@ -625,6 +629,7 @@ docker network create mynet
 Run containers:
 
 docker run -dit --name app1 --network mynet nginx
+
 docker run -dit --name app2 --network mynet ubuntu
 
 Now:
@@ -637,8 +642,7 @@ Real-World Example
 
 Like company internal employee directory:
 
-You call “Rahul”
-instead of extension number.
+You call “Rahul”, instead of extension number.
 
 Docker DNS does same.
 
@@ -668,12 +672,12 @@ Real-World Example
 
 Think:
 
-Company receptionist receives calls on main number
-Forwards to employee extension
+Company receptionist receives calls on main number, Forwards to employee extension
 
 Port mapping works same way.
 
 Traffic Flow
+
 User → Host Port 8080 → Container Port 80
 
 # Host Network
@@ -686,10 +690,11 @@ docker run --network host nginx
 
 Now container uses:
 
-Host IP
-Host ports directly
+a) Host IP
 
-No isolation.
+b) Host ports directly
+
+c) No isolation.
 
 Real-World Example
 
@@ -698,11 +703,17 @@ Employee directly uses company main phone number.
 No receptionist forwarding needed.
 
 Advantages
+
 Faster
+
 No NAT
+
 Better performance
+
 Disadvantages
+
 Less secure
+
 Port conflicts possible
 
 None Network
@@ -716,8 +727,11 @@ docker run --network none ubuntu
 Container:
 
 No internet
+
 No communication
+
 Only loopback interface
+
 Real-World Example
 
 Employee locked in isolated room with no phone/network.
@@ -729,8 +743,11 @@ Used in multi-host environments.
 Suppose:
 
 Server	Container
+
 Server1	frontend
+
 Server2	backend
+
 Server3	database
 
 Overlay network connects them.
@@ -742,11 +759,13 @@ Different office branches connected via VPN/MPLS.
 Employees communicate as if same office.
 
 Create Overlay Network
+
 docker network create -d overlay myoverlay
 
 Requires Docker Swarm.
 
 Architecture
+
 Datacenter 1 ---- Overlay ---- Datacenter 2
 
 Macvlan Network
@@ -762,8 +781,11 @@ Router sees container as separate machine.
 Employee gets personal direct phone number instead of extension.
 
 Use Cases
+
 Legacy applications
+
 Monitoring tools
+
 Network appliances
 
 Container DNS Resolution
@@ -773,6 +795,7 @@ Docker has built-in DNS server.
 Containers can communicate using:
 
 Container names
+
 Service names
 
 Example:
@@ -792,8 +815,11 @@ docker network inspect bridge
 Shows:
 
 Subnet
+
 Gateway
+
 Connected containers
+
 IP allocation
 
 Connect Running Container to Network
@@ -809,20 +835,27 @@ Real Production Example
 Suppose you deploy:
 
 Service	Container
+
 React App	frontend
+
 NodeJS API	backend
+
 MySQL	database
+
 Redis	cache
 
-Create network:
+#Create network:
 
 docker network create prod-net
 
 Run:
 
 docker run -d --name mysql --network prod-net mysql
+
 docker run -d --name redis --network prod-net redis
+
 docker run -d --name backend --network prod-net backend-image
+
 docker run -d --name frontend --network prod-net frontend-image
 
 Backend accesses:
@@ -845,6 +878,7 @@ iptables
 masquerading/NAT
 
 # Important Commands
+
 List Networks
 
 docker network ls
@@ -881,13 +915,9 @@ services:
 
 Docker Compose automatically creates network.
 
-Services communicate using:
+# Services communicate using:
 
-frontend
-backend
-db
-
-as hostnames.
+frontend, backend & db as hostnames.
 
 # Security Best Practices
 Use Custom Bridge Networks
